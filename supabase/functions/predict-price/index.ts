@@ -1,6 +1,11 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
 import { z } from "npm:zod@3.23.8";
 import model from "./trainedModel.json" with { type: "json" };
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+};
 
 const BodySchema = z.object({
   year: z.number().int().min(1980).max(2100),
