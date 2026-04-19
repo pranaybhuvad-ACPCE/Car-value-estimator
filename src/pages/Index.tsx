@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { PriceInputForm, PriceInputFormRef } from "@/components/PriceInputForm";
 import { BrandGrid } from "@/components/BrandGrid";
 import { BestSelling } from "@/components/BestSelling";
+import { ModelInfoCard } from "@/components/ModelInfoCard";
 import { Car, TrendingUp, Sun, Moon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -68,6 +69,7 @@ const Index = () => {
 
         <section className="space-y-5">
           <PriceInputForm ref={formRef} />
+          <ModelInfoCard />
         </section>
 
         <Separator />

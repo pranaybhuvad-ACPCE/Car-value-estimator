@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { predictPrice } from "@/data/mockCarData";
+import { fetchPredictedPrice, predictPriceLocal } from "@/lib/predictPrice";
 import { modelDetails, getModelBodyType } from "@/data/carDetails";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -144,7 +145,19 @@ const CarResult = () => {
   const transmission = searchParams.get("transmission") || "Manual";
   const engineSize = parseFloat(searchParams.get("engine") || "1.5");
 
-  const price = predictPrice(year, kmsDriven, brand, fuelType, transmission, engineSize, model);
+  const [price, setPrice] = useState<number>(() => predictPriceLocal({ year, kmsDriven, fuelType, transmission, carName: model }).predictedPrice);
+  const [predicting, setPredicting] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setPredicting(true);
+    fetchPredictedPrice({ year, kmsDriven, fuelType, transmission, carName: model })
+      .then((res) => { if (!cancelled) setPrice(res.predictedPrice); })
+      .catch(() => { /* keep local fallback */ })
+      .finally(() => { if (!cancelled) setPredicting(false); });
+    return () => { cancelled = true; };
+  }, [year, kmsDriven, fuelType, transmission, model]);
+
   const info = brandInfo[brand] || { founded: "N/A", origin: "N/A", description: "Information not available." };
   const carAge = new Date().getFullYear() - year;
   const baseDetails = modelDetails[model];
