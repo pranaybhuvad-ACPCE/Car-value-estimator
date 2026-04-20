@@ -44,13 +44,11 @@ export function PriceInsights({
   );
 
   // Smooth, gradual depreciation curve.
-  // Anchor: current estimated price corresponds to the car's actual age.
-  // Use a per-year depreciation rate that tapers (cars lose ~15% in early
-  // years and ~7% later). This produces a realistic monotonic decline
-  // without ever flooring abruptly.
+  // Age 0 is anchored to the AVERAGE selling price of this brand's cars
+  // from the user's car launch year (i.e. when the car was new).
+  // Falls back to back-calculation from the estimated price if no data.
   const priceByAge = useMemo(() => {
     const rateForAge = (a: number) => {
-      // Year 1: 18%, slowly tapering toward 6% by year 15
       if (a <= 1) return 0.18;
       if (a <= 3) return 0.14;
       if (a <= 6) return 0.11;
@@ -58,11 +56,18 @@ export function PriceInsights({
       return 0.06;
     };
 
-    // Walk forward from age 0 to 15. Compute price-at-zero by reversing
-    // depreciation from the user's anchor (carAge -> estimatedPrice).
-    let priceAtZero = estimatedPrice;
-    for (let a = 1; a <= carAge; a++) {
-      priceAtZero = priceAtZero / (1 - rateForAge(a));
+    // Avg price of this brand from the launch year (= user's car year)
+    const sameYear = brandData.filter((d) => d.year === year);
+    let priceAtZero: number;
+    if (sameYear.length > 0) {
+      priceAtZero =
+        sameYear.reduce((s, d) => s + d.sellingPrice, 0) / sameYear.length;
+    } else {
+      // Fallback: reverse-depreciate from estimated price
+      priceAtZero = estimatedPrice;
+      for (let a = 1; a <= carAge; a++) {
+        priceAtZero = priceAtZero / (1 - rateForAge(a));
+      }
     }
 
     const points: { age: number; price: number }[] = [];
@@ -73,7 +78,7 @@ export function PriceInsights({
       points.push({ age: a, price: Math.round(p * 100) / 100 });
     }
     return points;
-  }, [carAge, estimatedPrice]);
+  }, [carAge, estimatedPrice, brandData, year]);
 
   if (brandData.length < 5) return null;
 
