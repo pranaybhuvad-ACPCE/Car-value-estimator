@@ -9,6 +9,7 @@ import {
   ReferenceDot,
   LineChart,
   Line,
+  Label,
 } from "recharts";
 import { mockCarData } from "@/data/mockCarData";
 import { TrendingDown, BarChart3 } from "lucide-react";
