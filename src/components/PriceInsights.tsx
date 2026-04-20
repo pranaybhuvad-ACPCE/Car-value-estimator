@@ -9,6 +9,7 @@ import {
   ReferenceDot,
   LineChart,
   Line,
+  Label,
 } from "recharts";
 import { mockCarData } from "@/data/mockCarData";
 import { TrendingDown, BarChart3 } from "lucide-react";
@@ -84,18 +85,23 @@ export function PriceInsights({
           Depreciation · {brand} {model}
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Projected value over time for your {year} {brand} {model} ({engineSize}L · {fuelType} · {transmission}).
+          Projected value over time for your {year} {brand} {model} ({engineSize}L · {fuelType} · {transmission}). Starts from the estimated base (new) price and decreases each year.
         </p>
       </CardHeader>
       <CardContent>
         {/* Price vs Age */}
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingDown className="h-4 w-4 text-primary" />
-            <p className="text-sm font-medium text-foreground">Price vs Age</p>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium text-foreground">Price vs Age</p>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Base price: <span className="font-medium text-foreground">₹{priceByAge[0].price.toFixed(1)}L</span>
+            </p>
           </div>
           <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={priceByAge} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+            <LineChart data={priceByAge} margin={{ top: 16, right: 24, left: 0, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis
                 dataKey="age"
@@ -125,6 +131,19 @@ export function PriceInsights({
                 strokeWidth={2.5}
                 dot={{ r: 3 }}
               />
+              {/* Base/new price marker at age 0 */}
+              <ReferenceDot
+                x={0}
+                y={priceByAge[0].price}
+                r={6}
+                fill="hsl(var(--primary))"
+                stroke="hsl(var(--background))"
+                strokeWidth={2}
+                ifOverflow="extendDomain"
+              >
+                <Label value="New" position="top" fontSize={10} fill="hsl(var(--primary))" />
+              </ReferenceDot>
+              {/* User's car marker */}
               <ReferenceDot
                 x={carAge}
                 y={estimatedPrice}
@@ -133,7 +152,9 @@ export function PriceInsights({
                 stroke="hsl(var(--background))"
                 strokeWidth={2}
                 ifOverflow="extendDomain"
-              />
+              >
+                <Label value="Your car" position="top" fontSize={10} fill="hsl(var(--accent-foreground))" />
+              </ReferenceDot>
             </LineChart>
           </ResponsiveContainer>
           <p className="text-[11px] text-muted-foreground mt-1">
