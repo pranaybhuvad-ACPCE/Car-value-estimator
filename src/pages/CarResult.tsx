@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Car, Fuel, Gauge, Calendar, Settings, IndianRupee, TrendingUp, TrendingDown, Minus, Info, Shield, Zap, Activity, Users, Package, Mountain, Droplets, Rocket, HelpCircle } from "lucide-react";
-import { PriceInsights } from "@/components/PriceInsights";
+
 
 import hatchbackImg from "@/assets/car-hatchback.jpg";
 import sedanImg from "@/assets/car-sedan.jpg";
@@ -298,17 +298,7 @@ const CarResult = () => {
           </Card>
         )}
 
-        {/* Market Insights — Price vs Age & Price vs Km */}
-        <PriceInsights
-          brand={brand}
-          model={model}
-          year={year}
-          kmsDriven={kmsDriven}
-          fuelType={fuelType}
-          transmission={transmission}
-          engineSize={engineSize}
-          estimatedPrice={price}
-        />
+
 
         {/* Why this Price? */}
         <Card>
